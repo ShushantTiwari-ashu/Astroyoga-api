@@ -14,5 +14,6 @@ data class User(
     val handReadingData: String?,
     val filledIndex: Int?,
     val zodiacSign: String?,
+    val horoscope: HoroscopeResponse? = null
 )
 

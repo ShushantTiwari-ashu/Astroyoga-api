@@ -1,6 +1,6 @@
 package com.astroyoga.database
 
-import com.astroyoga.models.HttpResponse
+import com.astroyoga.table.HoroscopeTable
 import com.astroyoga.table.UserTable
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
@@ -13,9 +13,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 object DatabaseFactory {
 
     fun init() {
+        val tables = arrayOf(UserTable, HoroscopeTable)
         Database.connect(hikari())
         transaction {
-            SchemaUtils.createMissingTablesAndColumns(UserTable)
+            SchemaUtils.createMissingTablesAndColumns(*tables)
         }
     }
 
@@ -25,8 +26,8 @@ object DatabaseFactory {
         config.driverClassName = System.getenv("JDBC_DRIVER")
         config.jdbcUrl = System.getenv("JDBC_DATABASE_URL")
         config.maximumPoolSize = 10
-       /* config.username ="shushant"
-        config.password = "Ashu@8859"*/
+        /* config.username ="shushant"
+         config.password = "Ashu@8859"*/
         config.isAutoCommit = true
         config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
         config.validate()

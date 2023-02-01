@@ -1,6 +1,6 @@
 package com.astroyoga.models
 
-import io.ktor.http.HttpStatusCode
+import io.ktor.http.*
 
 /**
  * Represents HTTP response which will be exposed via API.
@@ -39,6 +39,7 @@ sealed class HttpResponse<T : Response> {
 /**
  * Generates [HttpResponse] from [Response].
  */
+/*
 fun generateHttpResponse(response: Response): HttpResponse<Response> {
     return when (response.status) {
         State.SUCCESS -> HttpResponse.ok(response)
@@ -46,4 +47,4 @@ fun generateHttpResponse(response: Response): HttpResponse<Response> {
         State.FAILED -> HttpResponse.badRequest(response)
         State.UNAUTHORIZED -> HttpResponse.unauth(response)
     }
-}
+}*/

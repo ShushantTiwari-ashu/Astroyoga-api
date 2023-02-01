@@ -1,7 +1,5 @@
 package com.astroyoga.models
 
-import io.ktor.server.routing.*
-
 /*
 data class Response<T>(val status: Int, val message: String, val data: T?)
 
@@ -25,7 +23,7 @@ fun <T> Route.serverError(message: String = "Server Error", data: T? = null) = r
  * Response model to expose in API response
  */
 interface Response {
-    val status: State
+    val status: Boolean
     val message: String
 }
 

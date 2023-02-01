@@ -1,11 +1,11 @@
 package com.astroyoga.table
 
-import org.jetbrains.exposed.dao.id.IntIdTable
 import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.Table
 
-object HoroscopeTable : IntIdTable() {
-
+object HoroscopeTable : Table("horoscope") {
     val color: Column<String> = varchar(name = "color", length = 128)
+    val device_id: Column<String> = varchar("device_id", 128).uniqueIndex()
     val compatibility: Column<String> = varchar(name = "compatibility", length = 128)
     val currentDate: Column<String> = varchar(name = "currentDate", length = 128)
     val dateRange: Column<String> = varchar(name = "dateRange", length = 128)

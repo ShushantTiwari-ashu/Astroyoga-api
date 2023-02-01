@@ -3,10 +3,13 @@ package com.astroyoga.database
 import com.astroyoga.database.DatabaseFactory.dbQuery
 import com.astroyoga.models.HoroscopeResponse
 import com.astroyoga.models.User
+import com.astroyoga.table.HoroscopeTable
 import com.astroyoga.table.UserTable
+import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.update
 import java.util.*
 
 class UserDaoFascadeImpl : UserDaoFascade {
@@ -51,6 +54,63 @@ class UserDaoFascadeImpl : UserDaoFascade {
         )
     }
 
-    override suspend fun getTodayHoroscope(): HoroscopeResponse? = null
+    override suspend fun getTodayHoroscope(deviceId: String): HoroscopeResponse? = dbQuery {
+        HoroscopeTable.select { HoroscopeTable.device_id.eq(deviceId) }
+            .map { rowToResultHoroscopeResponse(it) }.singleOrNull()
+    }
+
+    override suspend fun createHoroscope(horoscopeResponse: HoroscopeResponse): HoroscopeResponse? {
+        return dbQuery {
+            HoroscopeTable.insert {
+                it[description] = horoscopeResponse.description ?: ""
+                it[compatibility] = horoscopeResponse.compatibility ?: ""
+                it[currentDate] = horoscopeResponse.currentDate ?: ""
+                it[dateRange] = horoscopeResponse.dateRange ?: ""
+                it[luckyNumber] = horoscopeResponse.luckyNumber ?: ""
+                it[device_id] = horoscopeResponse.deviceId ?: ""
+                it[color] = horoscopeResponse.color ?: ""
+                it[luckyTime] = horoscopeResponse.luckyTime ?: ""
+                it[mood] = horoscopeResponse.mood ?: ""
+                it[time] = horoscopeResponse.time ?: ""
+
+            }.resultedValues?.singleOrNull()?.let(::rowToResultHoroscopeResponse)
+        }
+    }
+
+    override suspend fun updateHoroscope(horoscopeResponse: HoroscopeResponse): HoroscopeResponse? {
+        return dbQuery {
+            HoroscopeTable.update(where = { HoroscopeTable.device_id eq (horoscopeResponse.deviceId ?: "") }) {
+                it[description] = horoscopeResponse.description ?: ""
+                it[compatibility] = horoscopeResponse.compatibility ?: ""
+                it[currentDate] = horoscopeResponse.currentDate ?: ""
+                it[dateRange] = horoscopeResponse.dateRange ?: ""
+                it[luckyNumber] = horoscopeResponse.luckyNumber ?: ""
+                it[device_id] = horoscopeResponse.deviceId ?: ""
+                it[color] = horoscopeResponse.color ?: ""
+                it[luckyTime] = horoscopeResponse.luckyTime ?: ""
+                it[mood] = horoscopeResponse.mood ?: ""
+                it[time] = horoscopeResponse.time ?: ""
+            }
+            runBlocking {
+                getTodayHoroscope(horoscopeResponse.deviceId ?: "")
+            }
+        }
+    }
+
+    private fun rowToResultHoroscopeResponse(row: ResultRow?): HoroscopeResponse? {
+        if (row == null) return null
+        return HoroscopeResponse(
+            deviceId = row[HoroscopeTable.device_id].toString(),
+            description = row[HoroscopeTable.description].toString(),
+            compatibility = row[HoroscopeTable.compatibility].toString(),
+            dateRange = row[HoroscopeTable.dateRange].toString(),
+            luckyNumber = row[HoroscopeTable.luckyNumber].toString(),
+            color = row[HoroscopeTable.color].toString(),
+            mood = row[HoroscopeTable.mood].toString(),
+            time = row[HoroscopeTable.time].toString(),
+            luckyTime = row[HoroscopeTable.luckyTime].toString(),
+            currentDate = row[HoroscopeTable.currentDate].toString(),
+        )
+    }
 
 }
